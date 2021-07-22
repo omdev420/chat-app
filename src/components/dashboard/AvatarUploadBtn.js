@@ -83,7 +83,7 @@ const AvatarUploadBtn = () => {
   };
 
   return (
-    <div div className="mt-3 text-center">
+    <div className="mt-3 text-center">
       <ProfileAvatar
         src={profile.avatar}
         name={profile.name}
