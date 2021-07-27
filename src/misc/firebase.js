@@ -3,6 +3,7 @@ import 'firebase/auth';
 import 'firebase/database';
 import 'firebase/storage';
 import 'firebase/messaging';
+import { Notification as Toast } from 'rsuite';
 
 const config = {
   apiKey: 'AIzaSyAjbFB3CmPSX1zD_NV9AbKw3SU-l9-nCqo',
@@ -14,6 +15,8 @@ const config = {
   databaseURL:
     'https://chat-web-app-sdev-default-rtdb.asia-southeast1.firebasedatabase.app/',
 };
+export const fcmVapidKey =
+  'BOw7hQXpkYn6gKWk-c-MhbGONlhhLbWxsOIkdYJMS4g-SwYTAp_lrRL9TFKb4iw2NtB94KTu3Rm5CHG1qWdaVq8';
 
 const app = Firebase.initializeApp(config);
 
@@ -26,11 +29,8 @@ export const messaging = Firebase.messaging.isSupported()
   : null;
 
 if (messaging) {
-  messaging.usePublicVapidKey(
-    'BOw7hQXpkYn6gKWk-c-MhbGONlhhLbWxsOIkdYJMS4g-SwYTAp_lrRL9TFKb4iw2NtB94KTu3Rm5CHG1qWdaVq8'
-  );
-
-  messaging.onMessage(data => {
-    console.log(data);
+  messaging.onMessage(({ notification }) => {
+    const { title, body } = notification;
+    Toast.info({ title, description: body, duration: 0 });
   });
 }

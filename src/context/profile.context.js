@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import firebase from 'firebase/app';
-import { auth, database, messaging } from '../misc/firebase';
+import { auth, database, fcmVapidKey, messaging } from '../misc/firebase';
 
 export const isOfflineForDatabase = {
   state: 'offline',
@@ -21,7 +21,6 @@ export const ProfileProvider = ({ children }) => {
   useEffect(() => {
     let userRef;
     let userStatusRef;
-    let tokenRefreshUnsub;
 
     const authUnsub = auth.onAuthStateChanged(async authObj => {
       if (authObj) {
@@ -58,28 +57,18 @@ export const ProfileProvider = ({ children }) => {
 
         if (messaging) {
           try {
-            const currentToken = await messaging.getToken();
+            const currentToken = await messaging.getToken({
+              vapidKey: fcmVapidKey,
+            });
             if (currentToken) {
               await database
                 .ref(`/fcm_tokens/${currentToken}`)
                 .set(authObj.uid);
             }
           } catch (err) {
+            // eslint-disable-next-line no-console
             console.log('An error occurred while retrieving token. ', err);
           }
-
-          tokenRefreshUnsub = messaging.onTokenRefresh(async () => {
-            try {
-              const currentToken = await messaging.getToken();
-              if (currentToken) {
-                await database
-                  .ref(`/fcm_tokens/${currentToken}`)
-                  .set(authObj.uid);
-              }
-            } catch (err) {
-              console.log('An error occurred while retrieving token. ', err);
-            }
-          });
         }
       } else {
         if (userRef) {
@@ -88,10 +77,6 @@ export const ProfileProvider = ({ children }) => {
 
         if (userStatusRef) {
           userStatusRef.off();
-        }
-
-        if (tokenRefreshUnsub) {
-          tokenRefreshUnsub();
         }
 
         database.ref('.info/connected').off();
@@ -108,10 +93,6 @@ export const ProfileProvider = ({ children }) => {
 
       if (userRef) {
         userRef.off();
-      }
-
-      if (tokenRefreshUnsub) {
-        tokenRefreshUnsub();
       }
 
       if (userStatusRef) {
