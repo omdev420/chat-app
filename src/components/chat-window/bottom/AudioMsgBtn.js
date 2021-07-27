@@ -50,7 +50,7 @@ const AudioMsgBtn = ({ afterUpload }) => {
         record={isRecording}
         className="d-none"
         onStop={onUpload}
-        mimeType="audio/mp3"
+        mimeType="audio/webm"
       />
     </InputGroup.Button>
   );
