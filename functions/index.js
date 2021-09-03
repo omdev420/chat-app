@@ -1,3 +1,4 @@
+/* eslint-disable object-curly-spacing */
 /* eslint-disable quotes */
 const functions = require('firebase-functions');
 
@@ -11,6 +12,6 @@ admin.initializeApp({
     'https://chat-web-app-sdev-default-rtdb.asia-southeast1.firebasedatabase.app',
 });
 
-const {sendFcm} = require('./src/fcm');
+const { sendFcm } = require('./src/fcm');
 
-exports.sendFcm = sendFcm;()
+exports.sendFcm = sendFcm();
